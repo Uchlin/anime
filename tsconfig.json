@@ -27,8 +27,10 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
-    }
+    },
+    "sourceMap": true
   },
+
   "include": [
     ".eslintrc.cjs",
     "next-env.d.ts",
