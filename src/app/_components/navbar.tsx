@@ -11,16 +11,19 @@ export async function Navbar({ session }: { session: Session }) {
         Домой
       </Link>
       <Link href="/user" className="btn">
-        Пользователи
+        Пользователь
       </Link>
-      <Link href="/group" className="btn">
-        Группы
+      <Link href="/catalog" className="btn">
+        Каталог
       </Link>
-      <Link href="/taskType" className="btn">
-        Задачи
+      <Link href="/watching" className="btn">
+        Смотрю
       </Link>
-      <Link href="/student" className="btn">
-        Студент
+      <Link href="/plan" className="btn">
+        В планах
+      </Link>
+      <Link href="/watched" className="btn">
+        Просмотрено
       </Link>
     </div>
   );
