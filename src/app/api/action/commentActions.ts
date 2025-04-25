@@ -4,7 +4,7 @@ import { db } from "~/server/db";
 import { auth } from "~/server/auth";
 import { revalidatePath } from "next/cache";
 
-export async function addComment(animeId: string, text: string) {
+export async function addComment(animeId: string, text: string, parentId?: string | null) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Неавторизованный");
 
@@ -13,6 +13,7 @@ export async function addComment(animeId: string, text: string) {
       animeId,
       text,
       userId: session.user.id,
+      parentId: parentId ?? null,
     },
     include: {
       user: true,
@@ -26,13 +27,11 @@ export async function addComment(animeId: string, text: string) {
 
 export async function updateComment(commentId: string, text: string) {
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.id) throw new Error("Неавторизованный");
 
-  const comment = await db.comment.findUnique({
-    where: { id: commentId },
-  });
-
-  if (comment?.userId !== session.user.id) return;
+  const comment = await db.comment.findUnique({ where: { id: commentId } });
+  if (!comment) throw new Error("Комментарий не найден");
+  if (comment.userId !== session.user.id) throw new Error("Нет прав на редактирование");
 
   await db.comment.update({
     where: { id: commentId },

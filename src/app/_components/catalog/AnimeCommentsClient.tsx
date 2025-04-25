@@ -17,6 +17,8 @@ interface AnimeComment {
   user: User;
   voteCount: number;
   userVote?: number;
+  parentId?: string | null;
+  replies?: AnimeComment[];
 }
 
 interface AnimeCommentsClientProps {
@@ -30,15 +32,39 @@ export default function AnimeCommentsClient({
 }: AnimeCommentsClientProps) {
   const [comments, setComments] = useState<AnimeComment[]>(initialComments);
 
-  const addNewComment = (comment: AnimeComment) => {
-    setComments((prev: AnimeComment[]) => [comment, ...prev]);
-  };
+  // Рекурсивная функция для добавления ответа в нужный комментарий
+  function addReply(comments: AnimeComment[], reply: AnimeComment): AnimeComment[] {
+    return comments.map(comment => {
+      if (comment.id === reply.parentId) {
+        return {
+          ...comment,
+          replies: comment.replies ? [...comment.replies, reply] : [reply],
+        };
+      }
+      if (comment.replies) {
+        return {
+          ...comment,
+          replies: addReply(comment.replies, reply),
+        };
+      }
+      return comment;
+    });
+  }
 
+  const addNewComment = (comment: AnimeComment) => {
+    setComments(prev => {
+      if (comment.parentId) {
+        return addReply(prev, comment);
+      }
+      return [comment, ...prev];
+    });
+  };
 
   return (
     <>
       <CommentForm animeId={animeId} onAddComment={addNewComment} />
-      <CommentList comments={comments} setComments={setComments} />
+      <CommentList comments={comments} setComments={setComments} animeId={animeId} />
     </>
   );
 }
+

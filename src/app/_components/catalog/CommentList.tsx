@@ -16,14 +16,17 @@ interface AnimeComment {
   user: User;
   voteCount: number;
   userVote?: number;
+  parentId?: string | null;
+  replies?: AnimeComment[];
 }
 
 interface CommentListProps {
   comments: AnimeComment[];
   setComments: React.Dispatch<React.SetStateAction<AnimeComment[]>>;
+  animeId: string;
 }
 
-export default function CommentList({ comments, setComments }: CommentListProps) {
+export default function CommentList({ comments, setComments, animeId }: CommentListProps) {
   async function handleDelete(commentId: string) {
     if (!confirm("Вы уверены, что хотите удалить этот комментарий?")) return;
 
@@ -65,6 +68,26 @@ export default function CommentList({ comments, setComments }: CommentListProps)
       alert("Ошибка сети");
     }
   }
+  async function handleReply(text: string, parentId: string) {
+    try {
+      console.log("Отправляю комментарий", { text, parentId, animeId });
+      const response = await fetch("../../api/comments/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, parentId, animeId }),
+      });
+  
+      if (response.ok) {
+        const newComment: AnimeComment = await response.json();
+        setComments((prev) => [newComment, ...prev]);
+      } else {
+        const data = await response.json();
+        alert(data.message || "Ошибка при добавлении ответа");
+      }
+    } catch {
+      alert("Ошибка сети");
+    }
+  }
   async function handleVote(commentId: string, value: number) {
     try {
       const response = await fetch("/api/comments/vote", {
@@ -101,18 +124,42 @@ export default function CommentList({ comments, setComments }: CommentListProps)
     } catch {
       alert("Ошибка сети");
     }
-  }  
+  } 
+  function buildCommentTree(flatComments: AnimeComment[]): AnimeComment[] {
+    const commentMap = new Map<string, AnimeComment>();
+    const roots: AnimeComment[] = [];
+  
+    // Инициализируем map
+    flatComments.forEach((comment) => {
+      commentMap.set(comment.id, { ...comment, replies: [] });
+    });
+  
+    // Строим дерево
+    flatComments.forEach((comment) => {
+      if (comment.parentId) {
+        const parent = commentMap.get(comment.parentId);
+        if (parent) {
+          parent.replies!.push(commentMap.get(comment.id)!);
+        }
+      } else {
+        roots.push(commentMap.get(comment.id)!);
+      }
+    });
+  
+    return roots;
+  }
   return (
     <section className="mt-8">
       <h2 className="text-2xl font-semibold mb-4">Комментарии</h2>
       {comments.length > 0 ? (
-        comments.map((comment) => (
+        buildCommentTree(comments).map((comment) => (
           <CommentItem
             key={comment.id}
             comment={comment}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onVote={handleVote}
+            onReply={handleReply}
           />
         ))
       ) : (

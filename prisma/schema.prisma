@@ -104,15 +104,19 @@ model Rating {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   text      String
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
   userId    String
   animeId   String
+  parentId  String?
 
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
-  votes       CommentVote[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anime     Anime     @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  votes     CommentVote[]
+
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
 }
 model CommentVote {
   id         String   @id @default(cuid())

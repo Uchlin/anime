@@ -17,6 +17,8 @@ interface Comment {
   user: User;
   voteCount: number;
   userVote?: number;
+  parentId?: string | null;
+  replies?: Comment[];
 }
 
 interface CommentItemProps {
@@ -24,13 +26,17 @@ interface CommentItemProps {
   onDelete: (commentId: string) => void;
   onEdit: (commentId: string, newText: string) => void;
   onVote: (commentId: string, value: number) => void;
+  onReply: (text: string, parentId: string) => void;
 }
 
 import { ArrowUp, ArrowDown } from "lucide-react";
 
-export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onEdit, onVote }) => {
+export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onEdit, onVote, onReply }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [showReplies, setShowReplies] = useState(false);
+  const [replyText, setReplyText] = useState("");
 
   function handleSave() {
     if (editText.trim() === "") {
@@ -41,8 +47,18 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
     setIsEditing(false);
   }
 
+  function handleReplySubmit() {
+    if (replyText.trim() === "") {
+      alert("Ответ не может быть пустым");
+      return;
+    }
+    onReply(replyText, comment.id);
+    setReplyText("");
+    setShowReplyForm(false);
+  }
+  
   return (
-    <div className="mb-4 border pb-4 flex items-start gap-4 rounded p-4">
+    <div className={`mb-4 border pb-4 flex items-start gap-4 rounded p-4 ${comment.parentId ? 'ml-8 border-l-2 border-gray-700' : ''}`}>
       <Image
         src={comment.user.image ? `/ava/${comment.user.image}` : "/ava/no.jpg"}
         alt={comment.user.name ?? "User Avatar"}
@@ -95,10 +111,10 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
             </p>
           </div>
         </div>
-
+  
         {isEditing ? (
           <textarea
-            className="w-full p-2 rounded text-black"
+            className="resize-none w-full p-2 rounded text-white-600"
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             rows={3}
@@ -106,8 +122,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
         ) : (
           <p className="text-white-800 whitespace-pre-wrap">{comment.text}</p>
         )}
-
-        {/* Голосование */}
+  
         <div className="mt-2 flex items-center gap-2 text-white-800">
           <button
             onClick={() => onVote(comment.id, 1)}
@@ -128,8 +143,74 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
           >
             ▼
           </button>
+  
+          <button
+            onClick={() => setShowReplyForm(!showReplyForm)}
+            className="ml-4 text-blue-500 hover:underline text-sm"
+          >
+            Ответить
+          </button>
         </div>
+        {comment.replies && comment.replies.length > 0 && (
+          <>
+            {!showReplies ? (
+              <button
+                onClick={() => setShowReplies(true)}
+                className="mt-2 text-sm text-blue-400 hover:underline"
+              >
+                Показать {comment.replies.length} ответ{comment.replies.length === 1 ? "" : "а"}
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowReplies(false)}
+                className="mt-2 text-sm text-blue-400 hover:underline"
+              >
+                Скрыть ответы
+              </button>
+            )}
+          </>
+        )}
+        {showReplyForm && (
+          <div className="mt-2">
+            <textarea
+              className="resize-none w-full p-2 rounded text-white-600"
+              rows={3}
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+            />
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={handleReplySubmit}
+                className="px-3 py-1 bg-blue-600 rounded text-white hover:bg-blue-700"
+              >
+                Отправить
+              </button>
+              <button
+                onClick={() => setShowReplyForm(false)}
+                className="px-3 py-1 bg-gray-600 rounded text-white hover:bg-gray-700"
+              >
+                Отмена
+              </button>
+            </div>
+          </div>
+        )}
+        {showReplies && comment.replies && comment.replies.length > 0 && (
+          <div className="mt-4">
+            {comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                comment={reply}
+                onDelete={onDelete}
+                onEdit={onEdit}
+                onVote={onVote}
+                onReply={onReply}
+              />
+            ))}
+          </div>
+        )}
+
+
       </div>
     </div>
-  );
+  );  
 };

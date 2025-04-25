@@ -19,26 +19,26 @@ export interface AnimeComment {
 }
 interface CommentFormProps {
   animeId: string;
-  onAddComment: (comment: AnimeComment) => void; // колбек на добавление комментария
+  onAddComment: (comment: AnimeComment) => void;
+  parentId?: string | null;  // новый необязательный проп
 }
 
-export function CommentForm({ animeId, onAddComment }: CommentFormProps) {
+export function CommentForm({ animeId, onAddComment, parentId = null }: CommentFormProps) {
   const [text, setText] = useState("");
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
-  
+
     try {
-      const rawComment = await addComment(animeId, text);
+      const rawComment = await addComment(animeId, text, parentId); // передаем parentId
       const newComment: AnimeComment = {
         ...rawComment,
         createdAt: new Date(rawComment.createdAt),
         user: rawComment.user,
         voteCount: 0,
       };
-      
+
       onAddComment(newComment);
       setText("");
     } catch {
