@@ -6,17 +6,22 @@ import { revalidatePath } from "next/cache";
 
 export async function addComment(animeId: string, text: string) {
   const session = await auth();
-  if (!session?.user?.id) return;
+  if (!session?.user?.id) throw new Error("Неавторизованный");
 
-  await db.comment.create({
+  const newComment = await db.comment.create({
     data: {
-      text,
       animeId,
+      text,
       userId: session.user.id,
+    },
+    include: {
+      user: true,
     },
   });
 
   revalidatePath(`/catalog/${animeId}`);
+
+  return newComment;
 }
 
 export async function updateComment(commentId: string, text: string) {

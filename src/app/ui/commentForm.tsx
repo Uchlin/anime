@@ -1,70 +1,62 @@
 "use client";
 
 import { useState } from "react";
-import { addComment, updateComment, deleteComment } from "../api/action/commentActions";
+import { addComment } from "../api/action/commentActions"; // Серверная функция addComment
 import { useRouter } from "next/navigation";
-
-interface CommentFormProps {
-  animeId: string;
-  initialComment?: {
-    id: string;
-    text: string;
-  };
+interface User {
+  id: string;
+  name?: string | null;
+  image?: string | null;
 }
 
-export function CommentForm({ animeId, initialComment }: CommentFormProps) {
-  const [text, setText] = useState(initialComment?.text || "");
-  const [editing, setEditing] = useState(!!initialComment);
+export interface AnimeComment {
+  id: string;
+  text: string;
+  createdAt: Date; // или Date, если у тебя дата объект
+  user: User;
+}
+interface CommentFormProps {
+  animeId: string;
+  onAddComment: (comment: AnimeComment) => void; // колбек на добавление комментария
+}
+
+export function CommentForm({ animeId, onAddComment }: CommentFormProps) {
+  const [text, setText] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!text.trim()) return;
-
-    if (initialComment) {
-      await updateComment(initialComment.id, text);
-    } else {
-      await addComment(animeId, text);
+  
+    try {
+      const rawComment = await addComment(animeId, text);
+      const newComment: AnimeComment = {
+        ...rawComment,
+        createdAt: new Date(rawComment.createdAt),
+        user: rawComment.user,
+      };
+      
+      onAddComment(newComment);
       setText("");
-    }
-
-    router.refresh();
-  };
-
-  const handleDelete = async () => {
-    if (initialComment) {
-      await deleteComment(initialComment.id);
-      router.refresh();
+    } catch {
+      alert("Ошибка при добавлении комментария");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6 space-y-2">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-2">
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Оставьте комментарий..."
-        className="w-full p-2 border rounded-md"
-        rows={3}
+        className="resize-none p-2 border border-gray-300 rounded-md min-h-[80px]"
       />
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
-        >
-          {initialComment ? "Сохранить" : "Отправить"}
-        </button>
-        {initialComment && (
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 transition"
-          >
-            Удалить
-          </button>
-        )}
-      </div>
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition self-start"
+      >
+        Отправить
+      </button>
     </form>
   );
 }

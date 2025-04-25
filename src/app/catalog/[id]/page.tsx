@@ -7,12 +7,16 @@ import { ExpandableText } from "../../_components/catalog/ExpandableText";
 import { RatingForm } from "~/app/ui/ratingForm";
 import { auth } from "~/server/auth";
 import { CommentForm } from "~/app/ui/commentForm";
+import { CommentItem } from "../../_components/catalog/CommentItem";
+import CommentList from "../../_components/catalog/CommentList";
+import AnimeCommentsClient from "../../_components/catalog/AnimeCommentsClient";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
 export default async function AnimeDetailPage({ params }: PageProps) {
+  
   const { id } = await params;
   const anime = await db.anime.findUnique({
     where: { id },
@@ -46,9 +50,50 @@ export default async function AnimeDetailPage({ params }: PageProps) {
     acc[value] = ratings.filter((r) => r.value === value).length;
     return acc;
   }, {} as Record<number, number>);
+  async function handleDelete(commentId: string) {
+    if (!confirm("Вы уверены, что хотите удалить этот комментарий?")) return;
+
+    try {
+      const response = await fetch("/api/comments/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentId }),
+      });
+
+      if (response.ok) {
+        alert("Комментарий удален");
+        location.reload();
+      } else {
+        const data = await response.json();
+        alert(data.message || "Ошибка при удалении");
+      }
+    } catch (error) {
+      alert("Ошибка сети");
+    }
+  }
+
+  async function handleEdit(commentId: string, newText: string) {
+    try {
+      const response = await fetch("/api/comments/edit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentId, newText }),
+      });
+
+      if (response.ok) {
+        alert("Комментарий обновлен");
+        location.reload();
+      } else {
+        const data = await response.json();
+        alert(data.message || "Ошибка при обновлении");
+      }
+    } catch {
+      alert("Ошибка сети");
+    }
+  }
 
   return (
-    <main className="p-6 max-w-screen-md mx-auto">
+    <main className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">{anime.title}</h1>
       <div className="flex gap-8 max-w-full">
         <div className="flex-shrink-0">
@@ -74,7 +119,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
                 }
               </p>
             </div>
-            <ul className="space-y-1 text-base">
+            <ul className="text-base">
               {[5, 4, 3, 2, 1].map((star) => (
                 <li key={star}>
                   {"⭐".repeat(star)}: {ratingCounts[star] ?? 0}
@@ -86,38 +131,10 @@ export default async function AnimeDetailPage({ params }: PageProps) {
         </div>
       </div>
       <ExpandableText text={anime.description ?? ""} />
-
-      {session?.user && <CommentForm animeId={anime.id} />}
-
-      <section className="mt-8">
-        <h2 className="text-2xl font-semibold mb-4">Комментарии</h2>
-        {anime.comments.length > 0 ? (
-          anime.comments.map((comment) => (
-            <div key={comment.id} className="mb-4 border pb-4 flex items-start gap-4 rounded p-4 ">
-              <Image
-                src={comment.user.image ? `/ava/${comment.user.image}` : "/ava/no.jpg"}
-                alt={comment.user.name ?? "User Avatar"}
-                width={48}
-                height={48}
-                className="rounded-full object-cover"
-              />
-              <div className="flex flex-col flex-1">
-                <div className="flex justify-between items-center">
-                  <p className="font-semibold text-white-800">
-                    {comment.user.name ?? "Аноним"}
-                  </p>
-                  <p className="text-sm text-white-500">
-                    {format(new Date(comment.createdAt), "d MMMM yyyy", { locale: ru })}
-                  </p>
-                </div>
-                <p className="text-white-800">{comment.text}</p>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-500">Комментариев пока нет.</p>
-        )}
-      </section>
+      <AnimeCommentsClient
+        animeId={anime.id}
+        initialComments={anime.comments}
+      />
     </main>
   );
 }
