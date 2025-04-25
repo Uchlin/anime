@@ -14,7 +14,7 @@ export function ExpandableText({ text, maxLength = 300 }: ExpandableTextProps) {
   const displayText = expanded || !shouldTruncate ? text : text.slice(0, maxLength) + "...";
 
   return (
-    <div className="text-gray-600 mb-6">
+    <div className="text-white-600 mb-6">
       <p>{displayText}</p>
       {shouldTruncate && (
         <button
