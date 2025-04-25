@@ -68,24 +68,6 @@ export default async function AnimeDetailPage({ params }: PageProps) {
       </div>
 
       <ExpandableText text={anime.description ?? ""} />
-      
-      <div className="mb-6">
-      <h3 className="text-xl font-semibold mb-2">Оцените это аниме:</h3>
-      <form action={`/api/rate`} method="POST" className="flex items-center space-x-2">
-        <input type="hidden" name="animeId" value={anime.id} />
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="submit"
-            name="rating"
-            value={star}
-            className="text-2xl"
-          >
-            ⭐
-          </button>
-        ))}
-      </form>
-    </div>
       <section className="mt-8">
         <h2 className="text-2xl font-semibold mb-4">Комментарии</h2>
         {anime.comments.length > 0 ? (
