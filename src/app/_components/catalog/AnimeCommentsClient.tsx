@@ -15,6 +15,8 @@ interface AnimeComment {
   text: string;
   createdAt: Date;
   user: User;
+  voteCount: number;
+  userVote?: number;
 }
 
 interface AnimeCommentsClientProps {

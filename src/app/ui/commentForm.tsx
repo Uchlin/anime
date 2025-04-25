@@ -14,6 +14,8 @@ export interface AnimeComment {
   text: string;
   createdAt: Date; // или Date, если у тебя дата объект
   user: User;
+  voteCount: number;
+  userVote?: number;
 }
 interface CommentFormProps {
   animeId: string;
@@ -34,6 +36,7 @@ export function CommentForm({ animeId, onAddComment }: CommentFormProps) {
         ...rawComment,
         createdAt: new Date(rawComment.createdAt),
         user: rawComment.user,
+        voteCount: 0,
       };
       
       onAddComment(newComment);

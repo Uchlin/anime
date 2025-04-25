@@ -14,6 +14,8 @@ interface AnimeComment {
   text: string;
   createdAt: Date;
   user: User;
+  voteCount: number;
+  userVote?: number;
 }
 
 interface CommentListProps {
@@ -63,7 +65,43 @@ export default function CommentList({ comments, setComments }: CommentListProps)
       alert("Ошибка сети");
     }
   }
-
+  async function handleVote(commentId: string, value: number) {
+    try {
+      const response = await fetch("/api/comments/vote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ commentId, value }),
+      });
+  
+      if (response.ok) {
+        setComments((prev) =>
+          prev.map((c) => {
+            if (c.id !== commentId) return c;
+  
+            let newVoteCount = c.voteCount;
+            let newUserVote = c.userVote ?? 0;
+  
+            if (newUserVote === value) {
+              // Если голос совпадает — убираем голос
+              newVoteCount -= value;
+              newUserVote = 0;
+            } else {
+              // Если голос другой, корректируем voteCount на разницу
+              newVoteCount = newVoteCount - newUserVote + value;
+              newUserVote = value;
+            }
+  
+            return { ...c, voteCount: newVoteCount, userVote: newUserVote };
+          })
+        );
+      } else {
+        const data = await response.json();
+        alert(data.message || "Ошибка при голосовании");
+      }
+    } catch {
+      alert("Ошибка сети");
+    }
+  }  
   return (
     <section className="mt-8">
       <h2 className="text-2xl font-semibold mb-4">Комментарии</h2>
@@ -74,6 +112,7 @@ export default function CommentList({ comments, setComments }: CommentListProps)
             comment={comment}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            onVote={handleVote}
           />
         ))
       ) : (

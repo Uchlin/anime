@@ -61,6 +61,7 @@ model User {
     collections   AnimeCollection[]
     comments      Comment[]
     ratings       Rating[]
+    commentVotes  CommentVote[]
 }
 
 model Anime {
@@ -111,8 +112,19 @@ model Comment {
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   anime Anime @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  votes       CommentVote[]
 }
+model CommentVote {
+  id         String   @id @default(cuid())
+  userId     String
+  commentId  String
+  value      Int      // +1 или -1
 
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment    Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId]) // Чтобы пользователь мог голосовать только один раз за комментарий
+}
 enum WatchStatus {
   WATCHED
   WATCHING

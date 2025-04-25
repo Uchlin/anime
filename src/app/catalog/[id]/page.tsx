@@ -24,6 +24,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
       comments: {
         include: {
           user: true,
+          votes: true,
         },
         orderBy: { createdAt: "desc" },
       },
@@ -40,7 +41,18 @@ export default async function AnimeDetailPage({ params }: PageProps) {
   const ratings = anime.ratings;
   const userRating = ratings.find((r) => r.userId === session?.user?.id);
   const initialRating = userRating?.value;
+  const userId = session?.user?.id;
 
+  const commentsWithVotes = anime.comments.map((comment) => {
+    const voteCount = comment.votes.reduce((sum, vote) => sum + vote.value, 0);
+    const userVote = comment.votes.find(v => v.userId === userId)?.value ?? 0;
+
+    return {
+      ...comment,
+      voteCount,
+      userVote, // добавляем!
+    };
+  });
   const averageRating =
     ratings.length > 0
       ? (ratings.reduce((sum, r) => sum + r.value, 0) / ratings.length).toFixed(1)
@@ -133,7 +145,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
       <ExpandableText text={anime.description ?? ""} />
       <AnimeCommentsClient
         animeId={anime.id}
-        initialComments={anime.comments}
+        initialComments={commentsWithVotes}
       />
     </main>
   );

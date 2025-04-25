@@ -13,7 +13,6 @@ export default async function CatalogPage(props: {
   const searchParams = await props.searchParams;
   const page = Number(searchParams?.page) || 1;
   const size = 2
-
   const count = await db.anime.count();
   const anime = await db.anime.findMany({
     skip: (page - 1) * size,
