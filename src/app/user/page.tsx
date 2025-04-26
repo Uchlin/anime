@@ -58,7 +58,7 @@ export default async function Page(props: {
                         type="text"
                         name="name"
                         defaultValue={user.name || "Без имени"}
-                        className="input input-sm input-bordered"
+                        className="input input-sm input-bordered max-w-[280px]"
                         required
                       />
                       <input
@@ -66,7 +66,13 @@ export default async function Page(props: {
                         name="email"
                         required
                         defaultValue={user.email || ""}
-                        className="input input-sm input-bordered"
+                        className="input input-sm input-bordered max-w-[280px]"
+                      />
+                      <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        className="input input-sm input-bordered max-w-[270px]"
                       />
                     </div>
                     <div className="flex flex-col justify-center">
@@ -78,7 +84,7 @@ export default async function Page(props: {
                   </form>
                   <form action={deleteUser} className="form-control h-fit">
                     <input type="hidden" name="id" defaultValue={user.id} />
-                    <button type="submit" className="btn btn-error w-20 h-16">
+                    <button type="submit" className="btn btn-error w-20 h-16 mt-6">
                       Удалить <br />аккаунт
                     </button>
                   </form>

@@ -1,48 +1,72 @@
 "use server";
- 
- import { revalidatePath } from "next/cache";
+
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
- import { z } from "zod";
- import { db } from "~/server/db";
- 
- export async function createUser(formData: FormData) {
-     const fd = z
-       .object({
-         email: z.string().email(),
-         name: z.string(),
-       })
-       .parse({
-         email: formData.get("email"),
-         name: formData.get("name"),
-       });
-     await db.user.create({ data: fd });
-     revalidatePath("/user");
-   }
-   
-   export async function deleteUser(formData: FormData) {
-    const fd = z
-      .object({
-        id: z.string(),
-      })
-      .parse({
-        id: formData.get("id"),
-      });
-    await db.user.delete({ where: { id: fd.id } });
-    redirect("/user");
+import { z } from "zod";
+import { db } from "~/server/db";
+import { writeFile } from "fs/promises";
+import { join } from "path";
+import { v4 as uuidv4 } from "uuid";
+
+export async function createUser(formData: FormData) {
+  const fd = z
+    .object({
+      email: z.string().email(),
+      name: z.string(),
+    })
+    .parse({
+      email: formData.get("email"),
+      name: formData.get("name"),
+    });
+  await db.user.create({ data: fd });
+  revalidatePath("/user");
+}
+
+export async function deleteUser(formData: FormData) {
+  const fd = z
+    .object({
+      id: z.string(),
+    })
+    .parse({
+      id: formData.get("id"),
+    });
+  await db.user.delete({ where: { id: fd.id } });
+  redirect("/user");
+}
+
+export async function updateUser(formData: FormData) {
+  const id = formData.get("id") as string;
+  const name = formData.get("name") as string;
+  const email = formData.get("email") as string;
+  const file = formData.get("image") as File | null;
+
+  // Проверяем и валидируем базовые поля
+  const fd = z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      email: z.string().email(),
+    })
+    .parse({ id, name, email });
+
+  let imageFilename: string | undefined;
+
+  if (file && file.size > 0) {
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const ext = file.name.split(".").pop();
+    imageFilename = `${uuidv4()}.${ext}`;
+    const path = join(process.cwd(), "public/ava", imageFilename);
+    await writeFile(path, buffer);
   }
 
-  export async function updateUser(formData: FormData) {
-    const fd = z
-      .object({
-        id: z.string(),      
-        name: z.string(),
-        email: z.string().email(),
-      })
-      .parse({
-        id: formData.get("id"),      
-        name: formData.get("name"),
-        email: formData.get("email")?.toString(),
-      });
-    await db.user.update({ where: { id: fd.id }, data: fd });
-    revalidatePath("/user/"+fd.id);
-  }
+  await db.user.update({
+    where: { id: fd.id },
+    data: {
+      name: fd.name,
+      email: fd.email,
+      ...(imageFilename && { image: imageFilename }),
+    },
+  });
+
+  revalidatePath("/user/" + fd.id);
+}
