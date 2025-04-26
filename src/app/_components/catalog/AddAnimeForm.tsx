@@ -41,7 +41,7 @@ export default function AddAnimeForm() {
         placeholder="Название"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-2 rounded text-black"
+        className="w-full p-2 rounded text-white-600"
         required
       />
 
@@ -50,7 +50,7 @@ export default function AddAnimeForm() {
         placeholder="Имя файла изображения (например, naruto.jpg)"
         value={image}
         onChange={(e) => setImage(e.target.value)}
-        className="w-full p-2 rounded text-black"
+        className="w-full p-2 rounded text-white-600"
       />
 
       <input
@@ -58,7 +58,7 @@ export default function AddAnimeForm() {
         placeholder="Год"
         value={year}
         onChange={(e) => setYear(e.target.value)}
-        className="w-full p-2 rounded text-black"
+        className="w-full p-2  text-white-600"
         required
       />
 
@@ -67,7 +67,7 @@ export default function AddAnimeForm() {
         placeholder="Жанры (через запятую)"
         value={genre}
         onChange={(e) => setGenre(e.target.value)}
-        className="w-full p-2 rounded text-black"
+        className="w-full p-2 rounded text-white-600"
         required
       />
 
@@ -75,7 +75,7 @@ export default function AddAnimeForm() {
         placeholder="Описание"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        className="w-full p-2 rounded text-black"
+        className="w-full p-2 rounded text-white-600"
         rows={4}
       />
 
