@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { db } from "~/server/db";
 
 export default async function WatchingPage() {
@@ -18,22 +19,22 @@ export default async function WatchingPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
         {watchingList.map((entry) => (
-          <div
+          <Link
             key={entry.id}
-            className="rounded-lg overflow-hidden shadow-lg bg-gray-100"
+            href={`/catalog/${entry.anime.id}`}
+            className="rounded-lg overflow-hidden shadow-lg bg-gray-100 hover:shadow-xl transition block"
           >
             <Image
-              src={entry.anime.image ?`/images/${entry.anime.image}` : "/images/no.jpg"}
+              src={entry.anime.image ? `/images/${entry.anime.image}` : "/images/no.jpg"}
               alt={entry.anime.title}
-              width={300}
-              height={450}
+              width={350}
+              height={300}
               className="object-cover"
             />
             <h2 className="text-xl font-semibold mt-2 text-gray-800 pl-2">{entry.anime.title}</h2>
             <p className="text-sm text-gray-600 pl-2">Прогресс: {entry.progress} серий</p>
-            <p className="text-sm text-gray-600 mt-1 pl-2">Пользователь: {entry.user.name}
-            </p>
-          </div>
+            <p className="text-sm text-gray-600 mt-1 pl-2">Пользователь: {entry.user.name}</p>
+          </Link>
         ))}
       </div>
     </main>
