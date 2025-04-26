@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function AddAnimeForm() {
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [year, setYear] = useState("");
   const [genre, setGenre] = useState("");
   const [description, setDescription] = useState("");
@@ -12,16 +12,18 @@ export default function AddAnimeForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("year", year);
+    formData.append("genre", genre);
+    formData.append("description", description);
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
     const response = await fetch("/api/anime/add", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        year: Number(year),
-        genre: genre.split(",").map((g) => g.trim()),
-        description,
-        image, // имя файла изображения
-      }),
+      body: formData, // отправляем FormData, Content-Type будет выставлен автоматически
     });
 
     if (response.ok) {
@@ -33,9 +35,14 @@ export default function AddAnimeForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mb-8 space-y-4">
+    <form onSubmit={handleSubmit} className="mb-8 space-y-4" encType="multipart/form-data">
       <h2 className="text-xl font-semibold">Добавить аниме</h2>
-
+        <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+        className="w-full p-2 rounded text-white-600"
+      />
       <input
         type="text"
         placeholder="Название"
@@ -46,19 +53,11 @@ export default function AddAnimeForm() {
       />
 
       <input
-        type="text"
-        placeholder="Имя файла изображения (например, naruto.jpg)"
-        value={image}
-        onChange={(e) => setImage(e.target.value)}
-        className="w-full p-2 rounded text-white-600"
-      />
-
-      <input
         type="number"
         placeholder="Год"
         value={year}
         onChange={(e) => setYear(e.target.value)}
-        className="w-full p-2  text-white-600"
+        className="w-full p-2 text-white-600"
         required
       />
 

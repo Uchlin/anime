@@ -11,7 +11,8 @@ import { CommentItem } from "../../_components/catalog/CommentItem";
 import CommentList from "../../_components/catalog/CommentList";
 import AnimeCommentsClient from "../../_components/catalog/AnimeCommentsClient";
 import DeleteAnimeButton from "~/app/ui/DeleteAnimeButton";
-
+import { AnimeEditForm } from "../../_components/catalog/AnimeDetailPage";
+import AnimeEditToggle from "~/app/_components/catalog/AnimeEditToggle";
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -143,6 +144,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
           <RatingForm animeId={anime.id} initialRating={initialRating} />
         </div>
       </div>
+      <AnimeEditToggle anime={anime} />
       <DeleteAnimeButton animeId={anime.id} />
       <ExpandableText text={anime.description ?? ""} />
       <AnimeCommentsClient
