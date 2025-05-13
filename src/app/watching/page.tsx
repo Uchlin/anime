@@ -1,10 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "~/server/db";
+import { auth } from "~/server/auth";
 
 export default async function WatchingPage() {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return (
+      <main className="p-6 max-w-screen-xl mx-auto">
+        <h1 className="text-2xl text-red-500">Вы не авторизованы.</h1>
+      </main>
+    );
+  }
+
   const watchingList = await db.animeCollection.findMany({
     where: {
+      userId: session.user.id,
       status: "WATCHING",
     },
     include: {
@@ -32,7 +44,6 @@ export default async function WatchingPage() {
               className="object-cover"
             />
             <h2 className="text-xl font-semibold mt-2 text-gray-800 pl-2">{entry.anime.title}</h2>
-            <p className="text-sm text-gray-600 pl-2">Прогресс: {entry.progress} серий</p>
             <p className="text-sm text-gray-600 mt-1 pl-2">Пользователь: {entry.user.name}</p>
           </Link>
         ))}

@@ -1,11 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "~/server/db";
+import { auth } from "~/server/auth";
 
 export default async function WatchedPage() {
+  const session = await auth();
+
+  // Проверяем, авторизован ли пользователь
+  if (!session?.user?.id) {
+    return (
+      <main className="p-6 max-w-screen-xl mx-auto">
+        <h1 className="text-2xl text-red-500">Вы не авторизованы.</h1>
+      </main>
+    );
+  }
+
+  // Получаем список просмотренных аниме только для текущего пользователя
   const watchedList = await db.animeCollection.findMany({
     where: {
-      status: "WATCHED",
+      userId: session.user.id,  // Добавляем фильтрацию по userId
+      status: "WATCHED",  // Фильтруем по статусу "WATCHED"
     },
     include: {
       anime: true,
@@ -31,7 +45,6 @@ export default async function WatchedPage() {
               className="rounded-xl mb-4 object-cover"
             />
             <h2 className="text-xl font-semibold mt-2 text-gray-800 pl-2">{entry.anime.title}</h2>
-            <p className="text-sm text-gray-600 pl-2">Прогресс: {entry.progress} серий</p>
             <p className="text-sm text-gray-600 mt-1 pl-2">Пользователь: {entry.user.name}</p>
           </Link>
         ))}

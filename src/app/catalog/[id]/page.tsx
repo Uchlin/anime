@@ -4,6 +4,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ExpandableText } from "../../_components/catalog/ExpandableText";
+import { Status } from "../../_components/catalog/Status";
 import { RatingForm } from "~/app/ui/ratingForm";
 import { auth } from "~/server/auth";
 import { CommentForm } from "~/app/ui/commentForm";
@@ -39,11 +40,23 @@ export default async function AnimeDetailPage({ params }: PageProps) {
   if (!anime) {
     return <div>Аниме не найдено</div>;
   }
-
+  
   const ratings = anime.ratings;
   const userRating = ratings.find((r) => r.userId === session?.user?.id);
   const initialRating = userRating?.value;
   const userId = session?.user?.id;
+  let userCollectionEntry = null;
+
+  if (userId) {
+    userCollectionEntry = await db.animeCollection.findUnique({
+      where: {
+        userId_animeId: {
+          userId,
+          animeId: anime.id,
+        },
+      },
+    });
+  }
 
   const commentsWithVotes = anime.comments.map((comment) => {
     const voteCount = comment.votes.reduce((sum, vote) => sum + vote.value, 0);
@@ -144,6 +157,9 @@ export default async function AnimeDetailPage({ params }: PageProps) {
           <RatingForm animeId={anime.id} initialRating={initialRating} />
         </div>
       </div>
+      {userId && (
+        <Status animeId={anime.id} currentStatus={userCollectionEntry?.status || ""} />
+      )}
       <AnimeEditToggle anime={anime} />
       <DeleteAnimeButton animeId={anime.id} />
       <ExpandableText text={anime.description ?? ""} />

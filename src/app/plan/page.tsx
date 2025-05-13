@@ -1,11 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { db } from "~/server/db";
+import { auth } from "~/server/auth";
 
 export default async function PlanPage() {
+  // Получаем сессию и проверяем авторизацию пользователя
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return (
+      <main className="p-6 max-w-screen-xl mx-auto">
+        <h1 className="text-2xl text-red-500">Вы не авторизованы.</h1>
+      </main>
+    );
+  }
+
+  // Получаем список аниме, которые находятся в статусе "PLAN_TO_WATCH" для текущего пользователя
   const planList = await db.animeCollection.findMany({
     where: {
-      status: "PLAN_TO_WATCH",
+      userId: session.user.id,  // Фильтруем по текущему userId
+      status: "PLAN_TO_WATCH",   // Фильтруем по статусу "PLAN_TO_WATCH"
     },
     include: {
       anime: true,
@@ -32,7 +46,6 @@ export default async function PlanPage() {
               className="rounded-xl mb-4 object-cover"
             />
             <h2 className="text-xl font-semibold mt-2 text-gray-800 pl-2">{entry.anime.title}</h2>
-            <p className="text-sm text-gray-600 pl-2">Прогресс: {entry.progress} серий</p>
             <p className="text-sm text-gray-600 mt-1 pl-2">Пользователь: {entry.user.name}</p>
           </Link>
         ))}

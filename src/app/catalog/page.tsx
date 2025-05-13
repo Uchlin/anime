@@ -15,7 +15,7 @@ export default async function CatalogPage(props: {
 }) {
   const searchParams = await props.searchParams || {};
   const page = Number(searchParams.page) || 1;
-  const size = 2; // можно увеличить
+  const size = 3; // можно увеличить
 
   // Создаем объект фильтра для Prisma
   const filters: any = {};
