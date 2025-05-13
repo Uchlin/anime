@@ -31,8 +31,8 @@ export function RatingForm({ animeId, initialRating }: RatingFormProps) {
   const hasRating = rating > 0 || initialRating !== undefined;
 
   return (
-    <div className="my-4">
-      <div className="flex space-x-5 mb-1">
+    <div>
+      <div className="flex space-x-5">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -44,9 +44,7 @@ export function RatingForm({ animeId, initialRating }: RatingFormProps) {
             ★
           </button>
         ))}
-      </div>
-
-      {hasRating && (
+        {hasRating && (
         <button
           onClick={handleDelete}
           className="text-sm text-red-400 underline hover:text-red-600"
@@ -54,6 +52,7 @@ export function RatingForm({ animeId, initialRating }: RatingFormProps) {
           Удалить оценку
         </button>
       )}
+      </div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export function Status({ animeId, currentStatus }: StatusButtonsProps) {
   const [status, setStatus] = useState(currentStatus);
 
   const statuses = [
-    { label: "В планы", value: "PLAN_TO_WATCH" },
+    { label: "В планах", value: "PLAN_TO_WATCH" },
     { label: "Смотрю", value: "WATCHING" },
     { label: "Просмотрено", value: "WATCHED" },
   ];
@@ -59,7 +59,7 @@ export function Status({ animeId, currentStatus }: StatusButtonsProps) {
   
 
   return (
-    <div className="mt-6 flex gap-4">
+    <div className="mb-4 flex gap-4">
       {statuses.map(({ label, value }) => (
         <button
           key={value}

@@ -18,11 +18,11 @@ export async function Navbar({ session }: { session: Session }) {
       <Link href="/catalog" className="btn">
         Каталог
       </Link>
-      <Link href="/watching" className="btn">
-        Смотрю
-      </Link>
       <Link href="/plan" className="btn">
         В планах
+      </Link>
+      <Link href="/watching" className="btn">
+        Смотрю
       </Link>
       <Link href="/watched" className="btn">
         Просмотрено

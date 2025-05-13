@@ -19,7 +19,7 @@ export default function AnimeEditToggle({ anime }: AnimeEditToggleProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="my-4">
+    <div>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"

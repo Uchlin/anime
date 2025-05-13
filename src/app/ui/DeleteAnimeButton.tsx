@@ -26,7 +26,7 @@ export default function DeleteAnimeButton({ animeId }: DeleteAnimeButtonProps) {
   return (
     <button
       onClick={handleDelete}
-      className="mt-1 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+      className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
     >
       Удалить аниме
     </button>

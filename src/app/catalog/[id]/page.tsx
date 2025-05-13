@@ -77,48 +77,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
     acc[value] = ratings.filter((r) => r.value === value).length;
     return acc;
   }, {} as Record<number, number>);
-  async function handleDelete(commentId: string) {
-    if (!confirm("Вы уверены, что хотите удалить этот комментарий?")) return;
-
-    try {
-      const response = await fetch("/api/comments/delete", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ commentId }),
-      });
-
-      if (response.ok) {
-        alert("Комментарий удален");
-        location.reload();
-      } else {
-        const data = await response.json();
-        alert(data.message || "Ошибка при удалении");
-      }
-    } catch (error) {
-      alert("Ошибка сети");
-    }
-  }
-
-  async function handleEdit(commentId: string, newText: string) {
-    try {
-      const response = await fetch("/api/comments/edit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ commentId, newText }),
-      });
-
-      if (response.ok) {
-        alert("Комментарий обновлен");
-        location.reload();
-      } else {
-        const data = await response.json();
-        alert(data.message || "Ошибка при обновлении");
-      }
-    } catch {
-      alert("Ошибка сети");
-    }
-  }
-
+  
   return (
     <main className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">{anime.title}</h1>
@@ -155,11 +114,11 @@ export default async function AnimeDetailPage({ params }: PageProps) {
             </ul>
           </div>
           <RatingForm animeId={anime.id} initialRating={initialRating} />
+          {userId && (
+          <Status animeId={anime.id} currentStatus={userCollectionEntry?.status || ""} />
+        )}
         </div>
       </div>
-      {userId && (
-        <Status animeId={anime.id} currentStatus={userCollectionEntry?.status || ""} />
-      )}
       <AnimeEditToggle anime={anime} />
       <DeleteAnimeButton animeId={anime.id} />
       <ExpandableText text={anime.description ?? ""} />
