@@ -1,47 +1,86 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export function FilterPanel() {
+type FilterPanelProps = {
+  basePath: string; // например: "/catalog" или "/plan"
+};
+
+export function FilterPanel({ basePath }: FilterPanelProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [genre, setGenre] = useState("");
   const [year, setYear] = useState("");
-  const router = useRouter();
+  const [sort, setSort] = useState("");
+
+  // При монтировании считываем значения из URL
+  useEffect(() => {
+    const genreParam = searchParams.get("genre") ?? "";
+    const yearParam = searchParams.get("year") ?? "";
+    const sortParam = searchParams.get("sort") ?? "year_desc";
+
+    setGenre(genreParam);
+    setYear(yearParam);
+    setSort(sortParam);
+  }, [searchParams]);
 
   function handleApply() {
     const params = new URLSearchParams();
     if (genre) params.set("genre", genre);
     if (year) params.set("year", year);
-    router.push("/catalog?" + params.toString());
+    if (sort) params.set("sort", sort);
+    router.push(`${basePath}?${params.toString()}`);
   }
 
   return (
-    <div className="flex flex-wrap gap-4 items-center border-b pb-4">
+    <div className="flex flex-wrap gap-4 items-center pb-2">
       <select
         className="border rounded-lg p-2"
         value={genre}
         onChange={(e) => setGenre(e.target.value)}
       >
         <option value="">Все жанры</option>
-        <option value="Action">Экшен</option>
-        <option value="Drama">Драма</option>
-        <option value="Fantasy">Фэнтези</option>
+        <option value="сверхъестественное">Сверхъестественное</option>
+        <option value="повседневность">Повседневность</option>
+        <option value="исторический">Исторический</option>
+        <option value="приключение">Приключение</option>
+        <option value="фантастика">Фантастика</option>
+        <option value="фэнтези">Фэнтези</option>
+        <option value="комедия">Комедия</option>
+        <option value="боевик">Боевик</option>
+        <option value="драма">Драма</option>
+        <option value="сёнэн">Сёнэн</option>
       </select>
+
+      <input
+        type="number"
+        className="border rounded-lg p-2 w-32"
+        placeholder="Все года"
+        value={year}
+        onChange={(e) => {
+          const val = e.target.value;
+          if (val.length <= 4) setYear(val);
+        }}
+        onKeyDown={(e) => {
+          if (["e", "E", "+", "-", ".", ","].includes(e.key)) {
+            e.preventDefault();
+          }
+        }}
+        min={2000}
+        max={2100}
+      />
 
       <select
         className="border rounded-lg p-2"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
+        value={sort}
+        onChange={(e) => setSort(e.target.value)}
       >
-        <option value="">Все года</option>
-        {[...Array(16)].map((_, i) => {
-          const y = 2025 - i;
-          return (
-            <option key={y} value={y.toString()}>
-              {y}
-            </option>
-          );
-        })}
+        <option value="year_desc"> год по убыванию</option>
+        <option value="year_asc"> год по возрастанию</option>
+        <option value="title_asc"> от А до Я</option>
+        <option value="title_desc">от Я до А</option>
       </select>
 
       <button
