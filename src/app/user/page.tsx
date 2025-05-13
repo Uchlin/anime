@@ -4,6 +4,7 @@ import { AddUser } from "../_components/user/addUser";
 import Pagination from "../ui/pagination";
 import { deleteUser, updateUser } from "~/app/api/action/user";
 import { UserEditButton } from "../_components/user/UserEditButton";
+import { DeleteAccountForm } from "../_components/user/DeleteAccountForm";
 
 export default async function Page(props: {
   searchParams?: Promise<{
@@ -82,12 +83,7 @@ export default async function Page(props: {
                     </div>
                   </div>
                   </form>
-                  <form action={deleteUser} className="form-control h-fit">
-                    <input type="hidden" name="id" defaultValue={user.id} />
-                    <button type="submit" className="btn btn-error w-20 h-16 mt-6">
-                      Удалить <br />аккаунт
-                    </button>
-                  </form>
+                  <DeleteAccountForm userId={user.id} />
                 </div>
               </div>
             </div>

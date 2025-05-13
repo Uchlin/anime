@@ -3,9 +3,17 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.session.deleteMany();
+  await prisma.account.deleteMany();
+  await prisma.verificationToken.deleteMany();
+
+  await prisma.user.deleteMany();
   await prisma.animeCollection.deleteMany();
   await prisma.anime.deleteMany();
-  await prisma.user.deleteMany();
+  await prisma.comment.deleteMany();
+  await prisma.rating.deleteMany();
+  await prisma.commentVote.deleteMany();
+
   const user1 = await prisma.user.create({
     data: {
       name: 'Ян Непомнящий',
@@ -25,7 +33,7 @@ async function main() {
   });
   const user3 = await prisma.user.create({
     data: {
-      name: 'Дина Беленькая ',
+      name: 'Даниил Дубов',
       email: 'dan@example.com',
       emailVerified: new Date(),
       image: 'man3.jpg',
@@ -33,7 +41,7 @@ async function main() {
   });
   const user4 = await prisma.user.create({
     data: {
-      name: 'Мария Иванова',
+      name: 'Дина Беленькая',
       email: 'maria@example.com',
       emailVerified: new Date(),
       image: 'woman1.jpg',
@@ -190,7 +198,7 @@ async function main() {
     data: {
       userId: user1.id,
       animeId: anime1.id,
-      text: 'One of the best anime ever! The plot is so intense.',
+      text: 'Один из лучших аниме когда-либо! Сюжет такой напряжённый!',
     },
   });
 
@@ -198,7 +206,7 @@ async function main() {
     data: {
       userId: user2.id,
       animeId: anime2.id,
-      text: 'Demon Slayer is visually stunning and has great characters!',
+      text: 'Крд визуально потрясающий и имеет отличных персонажей!',
     },
   });
   await prisma.comment.create({

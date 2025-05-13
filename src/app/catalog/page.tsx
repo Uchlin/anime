@@ -70,7 +70,7 @@ export default async function CatalogPage(props: {
     <main className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">Каталог аниме</h1>
       <AddAnimeToggle />
-      <FilterPanel basePath="/plan" />
+      <FilterPanel basePath="/catalog" />
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
         {anime.map((anime) => (
