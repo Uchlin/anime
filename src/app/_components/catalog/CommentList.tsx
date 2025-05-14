@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { CommentItem } from "./CommentItem";
+import { useSearchParams } from "next/navigation";
+import Pagination from "~/app/ui/pagination";
 
 interface User {
   id: string;
@@ -152,11 +154,32 @@ export default function CommentList({ comments, setComments, animeId, currentUse
   
     return roots;
   }
+  const parentComments = comments.filter((c) => !c.parentId);
+  const repliesMap = new Map<string, AnimeComment[]>();
+  comments.forEach((comment) => {
+    if (comment.parentId) {
+      if (!repliesMap.has(comment.parentId)) {
+        repliesMap.set(comment.parentId, []);
+      }
+      repliesMap.get(comment.parentId)!.push(comment);
+    }
+  });
+  const searchParams = useSearchParams();
+  const currentPage = Number(searchParams.get("page")) || 1;
+  const COMMENTS_PER_PAGE = 2;
+  const totalPages = Math.ceil(parentComments.length / COMMENTS_PER_PAGE);
+  const paginatedParents = parentComments.slice(
+    (currentPage - 1) * COMMENTS_PER_PAGE,
+    currentPage * COMMENTS_PER_PAGE
+  );
   return (
     <section className="mt-8">
       <h2 className="text-2xl font-semibold mb-4">Комментарии</h2>
-      {comments.length > 0 ? (
-        buildCommentTree(comments).map((comment) => (
+      {paginatedParents.length > 0 ? (
+        buildCommentTree([
+          ...paginatedParents,
+          ...comments.filter((c) => c.parentId && paginatedParents.some(p => p.id === c.parentId)),
+        ]).map((comment) => (
           <CommentItem
             key={comment.id}
             comment={comment}
@@ -169,6 +192,12 @@ export default function CommentList({ comments, setComments, animeId, currentUse
         ))
       ) : (
         <p className="text-gray-500">Комментариев пока нет.</p>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-10">
+          <Pagination totalPages={totalPages} />
+        </div>
       )}
     </section>
   );

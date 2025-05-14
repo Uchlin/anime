@@ -6,8 +6,9 @@ import { SigninLink } from "./_components/signlink";
 import { UserEditButton } from "./_components/user/UserEditButton";
 import { DeleteAccountForm } from "./_components/user/DeleteAccountForm";
 import { deleteUser, updateUser } from "~/app/api/action/user";
+import Pagination from "./ui/pagination";
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams?: { page?: string } }) {
   const session = await auth();
 
   if (!session?.user) {
@@ -21,7 +22,9 @@ export default async function Home() {
   }
 
   const user = session.user;
-
+  const page = Number(searchParams?.page) || 1;
+  const size = 2
+  ;
   const [commentsCount, planCount, watchingCount, watchedCount, comments] = await Promise.all([
     db.comment.count({ where: { userId: user.id } }),
     db.animeCollection.count({ where: { userId: user.id, status: "PLAN_TO_WATCH" } }),
@@ -30,10 +33,12 @@ export default async function Home() {
     db.comment.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
-      include: { anime: true }, // Включаем связанные аниме
+      skip: (page - 1) * size,
+      take: size,
+      include: { anime: true },
     }) // Получаем комментарии с аниме
   ]);
-
+  const totalPages = Math.ceil(commentsCount / size);
   return (
     <main className="p-6 max-w-screen-xl mx-auto relative">
       <div className="flex justify-between items-start gap-6 w-full max-w-[850px]">
@@ -59,7 +64,7 @@ export default async function Home() {
         <div className="relative flex flex-col items-end gap-2 -mt-4">
           <div
             id={`edit-form-${user.id}`}
-            className="absolute right-4 top-4 z-10 bg-white-600 p-4 rounded-md w-96 "
+            className="absolute right-4 top-4 z-10 bg-white-600 p-4 rounded-md w-96 hidden "
           >
             <div className="flex items-start gap-2">
               <form action={updateUser} className="flex flex-col gap-2">
@@ -126,6 +131,11 @@ export default async function Home() {
           <p>У вас нет комментариев.</p>
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-10">
+          <Pagination totalPages={totalPages} />
+        </div>
+      )}
     </main>
   );
 }
