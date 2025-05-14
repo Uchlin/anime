@@ -19,14 +19,18 @@ interface AnimeComment {
   parentId?: string | null;
   replies?: AnimeComment[];
 }
-
+interface CurrentUser {
+  id: string;
+  isAdmin: boolean;
+}
 interface CommentListProps {
   comments: AnimeComment[];
   setComments: React.Dispatch<React.SetStateAction<AnimeComment[]>>;
   animeId: string;
+  currentUser: { id: string; isAdmin: boolean };
 }
 
-export default function CommentList({ comments, setComments, animeId }: CommentListProps) {
+export default function CommentList({ comments, setComments, animeId, currentUser }: CommentListProps) {
   async function handleDelete(commentId: string) {
     if (!confirm("Вы уверены, что хотите удалить этот комментарий?")) return;
 
@@ -160,6 +164,7 @@ export default function CommentList({ comments, setComments, animeId }: CommentL
             onEdit={handleEdit}
             onVote={handleVote}
             onReply={handleReply}
+            currentUser={currentUser}
           />
         ))
       ) : (
@@ -168,4 +173,3 @@ export default function CommentList({ comments, setComments, animeId }: CommentL
     </section>
   );
 }
-

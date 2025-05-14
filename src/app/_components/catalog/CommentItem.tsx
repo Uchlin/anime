@@ -20,24 +20,29 @@ interface Comment {
   parentId?: string | null;
   replies?: Comment[];
 }
-
+interface CurrentUser {
+  id: string;
+  isAdmin: boolean;
+}
 interface CommentItemProps {
   comment: Comment;
   onDelete: (commentId: string) => void;
   onEdit: (commentId: string, newText: string) => void;
   onVote: (commentId: string, value: number) => void;
   onReply: (text: string, parentId: string) => void;
+  currentUser: { id: string; isAdmin: boolean };
 }
 
 import { ArrowUp, ArrowDown } from "lucide-react";
 
-export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onEdit, onVote, onReply }) => {
+export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onEdit, onVote, onReply, currentUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [replyText, setReplyText] = useState("");
-
+  const isOwner = comment.user.id === currentUser.id;
+  const canEditOrDelete = isOwner || currentUser.isAdmin;
   function handleSave() {
     if (editText.trim() === "") {
       alert("Комментарий не может быть пустым");
@@ -90,7 +95,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
                   Отмена
                 </button>
               </>
-            ) : (
+            ) : canEditOrDelete ? (
               <>
                 <button
                   onClick={() => setIsEditing(true)}
@@ -105,7 +110,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
                   Удалить
                 </button>
               </>
-            )}
+            ) : null}
             <p className="text-sm text-white-500">
               {format(new Date(comment.createdAt), "d MMMM yyyy", { locale: ru })}
             </p>
@@ -114,7 +119,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
   
         {isEditing ? (
           <textarea
-            className="resize-none w-full p-2 rounded text-white-600"
+            className="resize-none w-full p-2 rounded bg-gray-200 text-gray-800"
             value={editText}
             onChange={(e) => setEditText(e.target.value)}
             rows={3}
@@ -132,7 +137,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
           >
             ▲
           </button>
-          <span className="text-sm font-semibold text-white">
+          <span className="text-sm font-semibold text-white-600">
             {comment.voteCount}
           </span>
           <button
@@ -173,7 +178,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
         {showReplyForm && (
           <div className="mt-2">
             <textarea
-              className="resize-none w-full p-2 rounded text-white-600"
+              className="resize-none w-full p-2 rounded bg-red-900 text-white placeholder-gray-300"
               rows={3}
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
@@ -204,6 +209,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
                 onEdit={onEdit}
                 onVote={onVote}
                 onReply={onReply}
+                currentUser={currentUser}
               />
             ))}
           </div>

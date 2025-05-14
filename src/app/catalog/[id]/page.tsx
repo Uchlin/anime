@@ -36,11 +36,14 @@ export default async function AnimeDetailPage({ params }: PageProps) {
   });
 
   const session = await auth();
-
-  if (!anime) {
-    return <div>Аниме не найдено</div>;
-  }
-  
+  const currentUser = session?.user ? {
+    id: session.user.id,
+    isAdmin: session.user.role === "ADMIN",
+    } : null;
+      if (!anime) {
+        return <div>Аниме не найдено</div>;
+      }
+  if (!currentUser) return <div>Войдите, чтобы увидеть комментарии</div>;
   const ratings = anime.ratings;
   const userRating = ratings.find((r) => r.userId === session?.user?.id);
   const initialRating = userRating?.value;
@@ -126,6 +129,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
       <AnimeCommentsClient
         animeId={anime.id}
         initialComments={commentsWithVotes}
+        currentUser={currentUser}
       />
     </main>
   );

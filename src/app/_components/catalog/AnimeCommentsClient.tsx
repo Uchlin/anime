@@ -20,15 +20,20 @@ interface AnimeComment {
   parentId?: string | null;
   replies?: AnimeComment[];
 }
-
+interface CurrentUser {
+  id: string;
+  isAdmin: boolean;
+}
 interface AnimeCommentsClientProps {
   animeId: string;
   initialComments: AnimeComment[];
+  currentUser: { id: string; isAdmin: boolean };
 }
 
 export default function AnimeCommentsClient({
   animeId,
   initialComments,
+  currentUser,
 }: AnimeCommentsClientProps) {
   const [comments, setComments] = useState<AnimeComment[]>(initialComments);
 
@@ -63,8 +68,12 @@ export default function AnimeCommentsClient({
   return (
     <>
       <CommentForm animeId={animeId} onAddComment={addNewComment} />
-      <CommentList comments={comments} setComments={setComments} animeId={animeId} />
+      <CommentList
+        comments={comments}
+        setComments={setComments}
+        animeId={animeId}
+        currentUser={currentUser}
+      />
     </>
   );
 }
-
