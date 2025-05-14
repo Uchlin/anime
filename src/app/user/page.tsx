@@ -46,6 +46,7 @@ export default async function Page(props: {
                 <UserEditButton user={user} />
               </div>
               <p className="text-gray-600">{user.email}</p>
+              <p className="text-gray-600">Роль: {user.role}</p>
             </div>
             </div>
             <div className="flex flex-col items-end gap-2">
@@ -69,6 +70,15 @@ export default async function Page(props: {
                         defaultValue={user.email || ""}
                         className="input input-sm input-bordered max-w-[280px]"
                       />
+                      <select
+                        name="role"
+                        defaultValue={user.role}
+                        className="select select-sm select-bordered max-w-[270px]"
+                        required
+                      >
+                        <option value="USER">USER</option>
+                        <option value="ADMIN">ADMIN</option>
+                      </select>
                       <input
                         type="file"
                         name="image"

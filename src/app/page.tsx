@@ -56,10 +56,10 @@ export default async function Home() {
         </div>
 
         {/* Правая часть (форма) */}
-        <div className="relative flex flex-col items-end gap-2">
+        <div className="relative flex flex-col items-end gap-2 -mt-4">
           <div
             id={`edit-form-${user.id}`}
-            className="absolute right-0 top-0 z-10 bg-white-600 p-4  rounded-md hidden"
+            className="absolute right-4 top-4 z-10 bg-white-600 p-4 rounded-md w-96 "
           >
             <div className="flex items-start gap-2">
               <form action={updateUser} className="flex flex-col gap-2">
@@ -86,6 +86,7 @@ export default async function Home() {
                       accept="image/*"
                       className="input input-sm input-bordered max-w-[270px]"
                     />
+                    <input type="hidden" name="role" value={user.role} />
                   </div>
                   <div className="flex flex-col justify-center">
                     <button type="submit" className="btn btn-sm btn-primary w-20 h-16">
@@ -116,8 +117,8 @@ export default async function Home() {
                 <Link href={`/catalog/${comment.animeId}`} className="text-xl font-semibold text-blue-600">
                   {comment.anime.title}
                 </Link>
-                <p className="text-white-600 mt-2">{comment.text}</p>
-                <p className="text-sm text-white-500 mt-2">Дата: {new Date(comment.createdAt).toLocaleDateString()}</p>
+                <p className="text-white mt-2">{comment.text}</p>
+                <p className="text-sm text-white mt-2">Дата: {new Date(comment.createdAt).toLocaleDateString()}</p>
               </div>
             ))}
           </div>

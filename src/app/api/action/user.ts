@@ -13,12 +13,20 @@ export async function createUser(formData: FormData) {
     .object({
       email: z.string().email(),
       name: z.string(),
+      role: z.enum(["USER", "ADMIN"]),
     })
     .parse({
       email: formData.get("email"),
       name: formData.get("name"),
+      role: formData.get("role"),
     });
-  await db.user.create({ data: fd });
+  await db.user.create({
+    data: {
+      email: fd.email,
+      name: fd.name,
+      role: fd.role,
+    },
+  });
   revalidatePath("/user");
 }
 
@@ -39,6 +47,7 @@ export async function updateUser(formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const file = formData.get("image") as File | null;
+  const role = formData.get("role") as "USER" | "ADMIN";
 
   // Проверяем и валидируем базовые поля
   const fd = z
@@ -46,8 +55,9 @@ export async function updateUser(formData: FormData) {
       id: z.string(),
       name: z.string(),
       email: z.string().email(),
+      role: z.enum(["USER", "ADMIN"]),
     })
-    .parse({ id, name, email });
+    .parse({ id, name, email, role });
 
   let imageFilename: string | undefined;
 
@@ -64,6 +74,7 @@ export async function updateUser(formData: FormData) {
     data: {
       name: fd.name,
       email: fd.email,
+      role: fd.role,
       ...(imageFilename && { image: imageFilename }),
     },
   });

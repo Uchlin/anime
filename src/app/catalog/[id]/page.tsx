@@ -78,6 +78,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
     return acc;
   }, {} as Record<number, number>);
   
+  const role = (await auth())?.user.role;
   return (
     <main className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">{anime.title}</h1>
@@ -119,8 +120,8 @@ export default async function AnimeDetailPage({ params }: PageProps) {
         )}
         </div>
       </div>
-      <AnimeEditToggle anime={anime} />
-      <DeleteAnimeButton animeId={anime.id} />
+      {role === "ADMIN" && <AnimeEditToggle anime={anime} />}
+      {role === "ADMIN" && <DeleteAnimeButton animeId={anime.id} />}
       <ExpandableText text={anime.description ?? ""} />
       <AnimeCommentsClient
         animeId={anime.id}

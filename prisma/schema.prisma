@@ -62,6 +62,8 @@ model User {
     comments      Comment[]
     ratings       Rating[]
     commentVotes  CommentVote[]
+    
+    role    Role @default(USER)
 }
 
 model Anime {
@@ -133,4 +135,8 @@ enum WatchStatus {
   WATCHED
   WATCHING
   PLAN_TO_WATCH
+}
+enum Role {
+  USER
+  ADMIN
 }

@@ -1,8 +1,10 @@
 import { type Session } from "next-auth";
 import { LogOut } from "lucide-react";
 import Link from "next/link";
+import { auth } from "~/server/auth";
 
 export async function Navbar({ session }: { session: Session }) {
+  const role = (await auth())?.user.role;
   return (
     <div className="navbar bg-base-100">
       <Link href="/api/auth/signout" className="btn flex items-center gap-2">
@@ -12,9 +14,11 @@ export async function Navbar({ session }: { session: Session }) {
       <Link href="/" className="btn">
         Домой
       </Link>
-      <Link href="/user" className="btn">
-        Пользователи
-      </Link>
+      {role==="ADMIN" && (
+        <Link href="/user" className="btn">
+          Пользователи
+        </Link>
+      )}
       <Link href="/catalog" className="btn">
         Каталог
       </Link>

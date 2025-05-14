@@ -38,7 +38,7 @@ export function RatingForm({ animeId, initialRating }: RatingFormProps) {
             key={star}
             onClick={() => handleClick(star)}
             className={`text-5xl transition-colors ${
-              star <= rating ? "text-yellow-400" : "text-white"
+              star <= rating ? "text-yellow-400" : "text-gray-400"
             }`}
           >
             ★

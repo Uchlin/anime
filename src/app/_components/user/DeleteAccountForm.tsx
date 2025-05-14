@@ -39,11 +39,11 @@ export function DeleteAccountForm({ userId }: { userId: string }): JSX.Element {
       alert("Ошибка сети.");
     }
   };
-
+  const buttonMarginTop = currentPath === "/user" ? "mt-11" : "mt-6";
   return (
     <form onSubmit={handleSubmit} className="form-control h-fit">
       <input type="hidden" name="id" value={userId} />
-      <button type="submit" className="btn btn-error w-20 h-16 mt-6">
+      <button type="submit" className={`btn btn-error w-20 h-16 ${buttonMarginTop}`}>
         Удалить <br />аккаунт
       </button>
     </form>

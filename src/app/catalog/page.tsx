@@ -64,12 +64,12 @@ export default async function CatalogPage(props: {
     },
   });
   const pages = Math.ceil(count / size);
-
+  const role = (await auth())?.user.role;
   // Далее рендер как у тебя был
   return (
     <main className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">Каталог аниме</h1>
-      <AddAnimeToggle />
+      {role === "ADMIN" &&<AddAnimeToggle />}
       <FilterPanel basePath="/catalog" />
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
