@@ -172,7 +172,7 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
         {showReplyForm && (
           <div className="mt-2">
             <textarea
-              className="resize-none w-full p-2 rounded bg-red-900 text-white placeholder-gray-300"
+              className="resize-none w-full p-2 rounded bg-gray-200 text-white placeholder-gray-300"
               rows={3}
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
