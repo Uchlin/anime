@@ -133,25 +133,23 @@ export default function CommentList({ comments, setComments, animeId, currentUse
   } 
   function buildCommentTree(flatComments: AnimeComment[]): AnimeComment[] {
     const commentMap = new Map<string, AnimeComment>();
-    const roots: AnimeComment[] = [];
-  
-    // Инициализируем map
     flatComments.forEach((comment) => {
       commentMap.set(comment.id, { ...comment, replies: [] });
     });
-  
-    // Строим дерево
-    flatComments.forEach((comment) => {
+
+    const roots: AnimeComment[] = [];
+
+    commentMap.forEach((comment) => {
       if (comment.parentId) {
         const parent = commentMap.get(comment.parentId);
         if (parent) {
-          parent.replies!.push(commentMap.get(comment.id)!);
+          parent.replies!.push(comment);
         }
       } else {
-        roots.push(commentMap.get(comment.id)!);
+        roots.push(comment);
       }
     });
-  
+
     return roots;
   }
   const parentComments = comments.filter((c) => !c.parentId);
@@ -169,17 +167,32 @@ export default function CommentList({ comments, setComments, animeId, currentUse
   const COMMENTS_PER_PAGE = 2;
   const totalPages = Math.ceil(parentComments.length / COMMENTS_PER_PAGE);
   const paginatedParents = parentComments.slice(
-    (currentPage - 1) * COMMENTS_PER_PAGE,
-    currentPage * COMMENTS_PER_PAGE
-  );
+      (currentPage - 1) * COMMENTS_PER_PAGE,
+      currentPage * COMMENTS_PER_PAGE
+    );
+    function collectDescendants(parentIds: string[], allComments: AnimeComment[]): AnimeComment[] {
+    const descendants: AnimeComment[] = [];
+
+    function recurse(parents: string[]) {
+      const children = allComments.filter((c) => c.parentId && parents.includes(c.parentId));
+      if (children.length > 0) {
+        descendants.push(...children);
+        recurse(children.map((c) => c.id));
+      }
+    }
+
+    recurse(parentIds);
+    return descendants;
+  }
+  const parentIds = paginatedParents.map((c) => c.id);
+  const allReplies = collectDescendants(parentIds, comments);
+  const fullTree = buildCommentTree([...paginatedParents, ...allReplies]);
   return (
     <section className="mt-8">
       <h2 className="text-2xl font-semibold mb-4">Комментарии</h2>
+      
       {paginatedParents.length > 0 ? (
-        buildCommentTree([
-          ...paginatedParents,
-          ...comments.filter((c) => c.parentId && paginatedParents.some(p => p.id === c.parentId)),
-        ]).map((comment) => (
+        fullTree.map((comment) => (
           <CommentItem
             key={comment.id}
             comment={comment}

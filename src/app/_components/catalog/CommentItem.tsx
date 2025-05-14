@@ -157,24 +157,18 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
           </button>
         </div>
         {comment.replies && comment.replies.length > 0 && (
-          <>
-            {!showReplies ? (
-              <button
-                onClick={() => setShowReplies(true)}
-                className="mt-2 text-sm text-blue-400 hover:underline"
-              >
-                Показать {comment.replies.length} ответ{comment.replies.length === 1 ? "" : "а"}
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowReplies(false)}
-                className="mt-2 text-sm text-blue-400 hover:underline"
-              >
-                Скрыть ответы
-              </button>
-            )}
-          </>
+          <div className="mt-2">
+            <button
+              onClick={() => setShowReplies(!showReplies)}
+              className="text-sm text-blue-400 hover:underline"
+            >
+              {showReplies
+                ? "Скрыть ответы"
+                : `Показать ${comment.replies.length} ответ${comment.replies.length === 1 ? "" : "а"}`}
+            </button>
+          </div>
         )}
+
         {showReplyForm && (
           <div className="mt-2">
             <textarea
