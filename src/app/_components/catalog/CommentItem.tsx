@@ -20,10 +20,6 @@ interface Comment {
   parentId?: string | null;
   replies?: Comment[];
 }
-interface CurrentUser {
-  id: string;
-  isAdmin: boolean;
-}
 interface CommentItemProps {
   comment: Comment;
   onDelete: (commentId: string) => void;
@@ -32,9 +28,6 @@ interface CommentItemProps {
   onReply: (text: string, parentId: string) => void;
   currentUser: { id: string; isAdmin: boolean };
 }
-
-import { ArrowUp, ArrowDown } from "lucide-react";
-
 export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onEdit, onVote, onReply, currentUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(comment.text);
@@ -116,7 +109,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
             </p>
           </div>
         </div>
-  
         {isEditing ? (
           <textarea
             className="resize-none w-full p-2 rounded bg-gray-200 text-gray-800"
@@ -127,7 +119,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
         ) : (
           <p className="text-white-800 whitespace-pre-wrap">{comment.text}</p>
         )}
-  
         <div className="mt-2 flex items-center gap-2 text-white-800">
           <button
             onClick={() => onVote(comment.id, 1)}
@@ -148,7 +139,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
           >
             ▼
           </button>
-  
           <button
             onClick={() => setShowReplyForm(!showReplyForm)}
             className="ml-4 text-blue-500 hover:underline text-sm"
@@ -168,7 +158,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
             </button>
           </div>
         )}
-
         {showReplyForm && (
           <div className="mt-2">
             <textarea
@@ -208,8 +197,6 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onDelete, onE
             ))}
           </div>
         )}
-
-
       </div>
     </div>
   );  

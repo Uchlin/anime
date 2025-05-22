@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { addComment } from "../api/action/commentActions"; // Серверная функция addComment
-import { useRouter } from "next/navigation";
 interface User {
   id: string;
   name?: string | null;
@@ -12,15 +10,16 @@ interface User {
 export interface AnimeComment {
   id: string;
   text: string;
-  createdAt: Date; // или Date, если у тебя дата объект
+  createdAt: Date;
   user: User;
   voteCount: number;
   userVote?: number;
 }
+
 interface CommentFormProps {
   animeId: string;
   onAddComment: (comment: AnimeComment) => void;
-  parentId?: string | null;  // новый необязательный проп
+  parentId?: string | null;
 }
 
 export function CommentForm({ animeId, onAddComment, parentId = null }: CommentFormProps) {
@@ -31,7 +30,18 @@ export function CommentForm({ animeId, onAddComment, parentId = null }: CommentF
     if (!text.trim()) return;
 
     try {
-      const rawComment = await addComment(animeId, text, parentId); // передаем parentId
+      const res = await fetch("/api/comments/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ animeId, text, parentId }),
+      });
+
+      if (!res.ok) throw new Error("Ошибка при добавлении комментария");
+
+      const rawComment = await res.json();
+
       const newComment: AnimeComment = {
         ...rawComment,
         createdAt: new Date(rawComment.createdAt),
@@ -41,7 +51,8 @@ export function CommentForm({ animeId, onAddComment, parentId = null }: CommentF
 
       onAddComment(newComment);
       setText("");
-    } catch {
+    } catch (err) {
+      console.error(err);
       alert("Ошибка при добавлении комментария");
     }
   };

@@ -15,9 +15,7 @@ export default async function WatchedPage(
     }>;
 }) {
   const session = await auth();
-  const userId = session?.user?.id;
   const searchParams = await props.searchParams || {};
-  // Проверяем, авторизован ли пользователь
   if (!session?.user?.id) {
     return (
       <main className="p-6 max-w-screen-xl mx-auto">
@@ -25,11 +23,10 @@ export default async function WatchedPage(
       </main>
     );
   }
-  // Создаем объект фильтра для Prisma
   const filters: any = {};
   if (searchParams.genre) {
     filters.genre = {
-      has: searchParams.genre, // Assuming genre is a string array column
+      has: searchParams.genre,
     };
   }
   if (searchParams.year) {
@@ -50,11 +47,10 @@ export default async function WatchedPage(
       orderBy = { year: "desc" };
       break;
   }
-  // Получаем список просмотренных аниме только для текущего пользователя
   const watchedList = await db.animeCollection.findMany({
     where: {
-      userId: session.user.id,  // Добавляем фильтрацию по userId
-      status: "WATCHED",  // Фильтруем по статусу "WATCHED"
+      userId: session.user.id,
+      status: "WATCHED",
       anime: filters,
     },
     orderBy: {

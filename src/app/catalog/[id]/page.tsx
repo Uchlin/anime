@@ -1,19 +1,12 @@
-
 import { db } from "~/server/db";
 import Image from "next/image";
-import { format } from "date-fns";
-import { ru } from "date-fns/locale";
+import { auth } from "~/server/auth";
+import AnimeCommentsClient from "../../_components/catalog/AnimeCommentsClient";
+import AnimeEditToggle from "../../_components/catalog/AnimeEditToggle";
 import { ExpandableText } from "../../_components/catalog/ExpandableText";
 import { Status } from "../../_components/catalog/Status";
-import { RatingForm } from "~/app/ui/ratingForm";
-import { auth } from "~/server/auth";
-import { CommentForm } from "~/app/ui/commentForm";
-import { CommentItem } from "../../_components/catalog/CommentItem";
-import CommentList from "../../_components/catalog/CommentList";
-import AnimeCommentsClient from "../../_components/catalog/AnimeCommentsClient";
 import DeleteAnimeButton from "~/app/ui/DeleteAnimeButton";
-import { AnimeEditForm } from "../../_components/catalog/AnimeDetailPage";
-import AnimeEditToggle from "~/app/_components/catalog/AnimeEditToggle";
+import { RatingForm } from "~/app/ui/ratingForm";
 interface PageProps {
   params: Promise<{ id: string }>;
 }
@@ -68,7 +61,7 @@ export default async function AnimeDetailPage({ params }: PageProps) {
     return {
       ...comment,
       voteCount,
-      userVote, // добавляем!
+      userVote,
     };
   });
   const averageRating =

@@ -14,7 +14,6 @@ export async function GET(_: Request, { params }: { params: { animeId: string } 
       },
     });
 
-    // Сначала группируем по parentId
     const commentsByParentId = comments.reduce((acc, comment) => {
       const key = comment.parentId ?? "root";
       if (!acc[key]) acc[key] = [];

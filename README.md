@@ -1,29 +1,38 @@
-# Create T3 App
+# Проект на T3 Stack (Next.js, Prisma, NextAuth, TypeScript)
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+## 🚀 Описание проекта
 
-## What's next? How do I make an app with this?
+Это клиент-серверное веб-приложение для каталога аниме, где пользователи могут просматривать информацию об аниме, оставлять комментарии, отвечать на них и голосовать.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🛠 Технологии
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- **T3 Stack** (Next.js, TypeScript, Tailwind, tRPC, Prisma, NextAuth)
+- **Next.js 15** – React-фреймворк
+- **TypeScript** – строгая типизация
+- **Prisma** – ORM для работы с базой данных
+- **NextAuth.js** – аутентификация
+- **Tailwind CSS** – стилизация
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## 📦 Установка
 
-## Learn More
+```bash
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+# 1. Клонировать репозиторий
+git clone https://github.com/Uchlin/anime.git
+cd anime
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+# 2. Установить зависимости
+pnpm install
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+# 3. Инициализация БД
+pnpm prisma migrate dev --name init
 
-## How do I deploy this?
+# 4. Заполнение БД начальными данными
+pnpm db:seed
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+# 5. Запуск контейнеров
+pnpm db:start
+
+# 6. Запуск разработки
+pnpm run dev
+```

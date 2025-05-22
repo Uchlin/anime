@@ -24,11 +24,10 @@ export default async function WatchingPage(
       </main>
     );
   }
-  // Создаем объект фильтра для Prisma
   const filters: any = {};
   if (searchParams.genre) {
     filters.genre = {
-      has: searchParams.genre, // Assuming genre is a string array column
+      has: searchParams.genre,
     };
   }
   if (searchParams.year) {

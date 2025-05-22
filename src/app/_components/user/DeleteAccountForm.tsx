@@ -8,7 +8,6 @@ export function DeleteAccountForm({ userId }: { userId: string }): JSX.Element {
   const [currentPath, setCurrentPath] = useState<string>("/");
   const router = useRouter();
 
-  // Получаем текущий путь только на клиенте
   useEffect(() => {
     setCurrentPath(window.location.pathname);
   }, []);

@@ -2,11 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
-import { SigninLink } from "./_components/signlink";
-import { UserEditButton } from "./_components/user/UserEditButton";
 import { DeleteAccountForm } from "./_components/user/DeleteAccountForm";
-import { deleteUser, updateUser } from "~/app/api/action/user";
+import { UserEditButton } from "./_components/user/UserEditButton";
+import { SigninLink } from "./_components/signlink";
 import Pagination from "./ui/pagination";
+import { updateUser } from "~/app/api/action/user";
+
 
 export default async function Home({ searchParams }: { searchParams?: { page?: string } }) {
   const session = await auth();
@@ -36,13 +37,12 @@ export default async function Home({ searchParams }: { searchParams?: { page?: s
       skip: (page - 1) * size,
       take: size,
       include: { anime: true },
-    }) // Получаем комментарии с аниме
+    })
   ]);
   const totalPages = Math.ceil(commentsCount / size);
   return (
     <main className="p-6 max-w-screen-xl mx-auto relative">
       <div className="flex justify-between items-start gap-6 w-full max-w-[850px]">
-        {/* Левая часть */}
         <div className="flex items-center gap-4">
           <Image
             src={user.image ? `/ava/${user.image}` : "/ava/no.jpg"}
@@ -59,8 +59,6 @@ export default async function Home({ searchParams }: { searchParams?: { page?: s
             <p className="text-white-600">{user.email}</p>
           </div>
         </div>
-
-        {/* Правая часть (форма) */}
         <div className="relative flex flex-col items-end gap-2 -mt-4">
           <div
             id={`edit-form-${user.id}`}
@@ -147,6 +145,5 @@ function StatBox({ count, label, href }: { count: number; label: string; href?: 
       <span className="text-gray-600 text-sm mt-1">{label}</span>
     </div>
   );
-
   return href ? <Link href={href}>{content}</Link> : content;
 }

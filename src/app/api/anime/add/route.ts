@@ -20,9 +20,7 @@ export async function POST(req: Request) {
 
     const year = Number(yearStr);
     const genre = genreStr.split(",").map((g) => g.trim());
-
     let imageFilename = null;
-
     if (imageFile && imageFile.size > 0) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
       const ext = imageFile.name.split(".").pop();

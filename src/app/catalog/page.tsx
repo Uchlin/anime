@@ -3,7 +3,6 @@ import Link from "next/link";
 import { db } from "~/server/db";
 import { FilterPanel } from "./../_components/filter-panel";
 import Pagination from "../ui/pagination";
-// import AddAnimeForm from "./../_components/catalog/AddAnimeForm"
 import AddAnimeToggle from "./../_components/catalog/AddAnimeToggle";
 import { auth } from "~/server/auth";
 export default async function CatalogPage(props: {
@@ -19,13 +18,13 @@ export default async function CatalogPage(props: {
   const userId = session?.user?.id;
   const searchParams = await props.searchParams || {};
   const page = Number(searchParams.page) || 1;
-  const size = 3; // можно увеличить
+  const size = 3;
 
   // Создаем объект фильтра для Prisma
   const filters: any = {};
   if (searchParams.genre) {
     filters.genre = {
-      has: searchParams.genre, // Assuming genre is a string array column
+      has: searchParams.genre,
     };
   }
   if (searchParams.year) {
@@ -65,7 +64,6 @@ export default async function CatalogPage(props: {
   });
   const pages = Math.ceil(count / size);
   const role = (await auth())?.user.role;
-  // Далее рендер как у тебя был
   return (
     <main className="p-6 max-w-screen-xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">Каталог аниме</h1>

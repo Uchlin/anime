@@ -14,9 +14,7 @@ export default async function PlanPage(
       sort?: string;
     }>;
 }) {
-  // Получаем сессию и проверяем авторизацию пользователя
   const session = await auth();
-  const userId = session?.user?.id;
   const searchParams = await props.searchParams || {};
   if (!session?.user?.id) {
     return (
@@ -25,11 +23,10 @@ export default async function PlanPage(
       </main>
     );
   }
-  // Создаем объект фильтра для Prisma
   const filters: any = {};
   if (searchParams.genre) {
     filters.genre = {
-      has: searchParams.genre, // Assuming genre is a string array column
+      has: searchParams.genre,
     };
   }
   if (searchParams.year) {
@@ -51,11 +48,10 @@ export default async function PlanPage(
       break;
   }
 
-  // Получаем список аниме, которые находятся в статусе "PLAN_TO_WATCH" для текущего пользователя
   const planList = await db.animeCollection.findMany({
     where: {
-      userId: session.user.id,  // Фильтруем по текущему userId
-      status: "PLAN_TO_WATCH",   // Фильтруем по статусу "PLAN_TO_WATCH"
+      userId: session.user.id,
+      status: "PLAN_TO_WATCH",
       anime: filters,
     },
     orderBy: {
